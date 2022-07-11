@@ -8,7 +8,7 @@ module.exports = defineConfig({
     https:false,
     proxy:{
       [process.env.VUE_APP_BASE_API]:{
-        target:VUE_APP_BASE_URL,
+        target:process.env.VUE_APP_BASE_URL,
         changeOrigin:true,
         pathWrite:{
           ['^'+process.env.VUE_APP_BASE_API]:''
