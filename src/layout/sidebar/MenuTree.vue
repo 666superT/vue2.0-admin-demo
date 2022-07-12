@@ -7,6 +7,8 @@
       text-color="#fff"
       active-text-color="rgb(255, 208, 75)"
       style="border: none"
+      collapse-transition
+      :collapse="isCollapse"
       router
     >
       <Item v-for="(v, i) in getMenuList" :key="i" :item="v"></Item>
@@ -22,6 +24,11 @@ export default {
   computed: {
     getMenuList() {
       return this.$store.getters.navList.menus
+    }
+  },
+  data() {
+    return {
+      isCollapse: true
     }
   }
 }

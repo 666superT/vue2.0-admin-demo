@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import { Message } from 'element-ui'
 const http = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 5000
@@ -20,6 +21,9 @@ http.interceptors.response.use(
   (res) => {
     if (res.data.code === 200) {
       return res.data.data
+    }
+    if (res.data.code === 400) {
+      Message.error(res.data.msg)
     }
     // return res
   },

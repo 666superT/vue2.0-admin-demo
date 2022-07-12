@@ -1,28 +1,10 @@
 <template>
-  <div class="layout">
-    <el-container>
-      <el-aside width="200px">
-        <app-sidebar></app-sidebar>
-      </el-aside>
-      <el-container>
-        <el-header>
-          <app-header></app-header>
-        </el-header>
-        <el-main>
-          <app-main></app-main>
-        </el-main>
-      </el-container>
-    </el-container>
-  </div>
+  <div class="">角色</div>
 </template>
 
 <script>
 export default {
-  components: {
-    AppHeader: () => import('./header'),
-    AppSidebar: () => import('./sidebar'),
-    AppMain: () => import('./main')
-  },
+  components: {},
   // 定义属性
   data() {
     return {}
@@ -54,14 +36,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.layout {
-  height: 100%;
-  .el-container {
-    height: 100%;
-    .el-header {
-      background: #18bc9c;
-    }
-  }
-}
-</style>
+<style lang="scss" scoped></style>
