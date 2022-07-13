@@ -1,21 +1,12 @@
 <template>
-  <div class="user">
-    <my-body>
-      <template slot="body">
-        <bread-crumb></bread-crumb>
-      </template>
-    </my-body>
+  <div class="my_body">
+    <slot name="body"></slot>
   </div>
 </template>
 
 <script>
-import MyBody from '../../components/MyBody.vue'
-import BreadCrumb from '../../components/BreadCrumb.vue'
 export default {
-  components: {
-    MyBody,
-    BreadCrumb
-  },
+  components: {},
   // 定义属性
   data() {
     return {}
@@ -47,4 +38,12 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.my_body {
+  border-radius: 10px;
+  background: #fff;
+  &:hover {
+    box-shadow: 5px 5px 5px 3px rgba($color: #000000, $alpha: 0.5);
+  }
+}
+</style>

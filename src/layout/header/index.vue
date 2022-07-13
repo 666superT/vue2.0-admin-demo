@@ -73,6 +73,7 @@ export default {
     },
     handleLogOut() {
       this.$store.commit('user/SET_TOKEN', '')
+      this.$store.commit('tagsView/DEL_ALL_TAG')
       this.$router.push('/login')
     }
   },

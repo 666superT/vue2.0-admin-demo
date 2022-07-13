@@ -1,8 +1,10 @@
 import layout from '../../layout'
 export default {
-  path: '/',
+  path: '/sys',
   name: 'sys:user:list',
   component: layout,
+  redirect: '/sys/users',
+  meta: { title: '用户管理' },
   children: [
     {
       path: '/sys/users',

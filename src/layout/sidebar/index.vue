@@ -43,5 +43,6 @@ export default {
 <style lang="scss" scoped>
 .aside {
   height: 100%;
+  background-color: rgb(34, 45, 50)
 }
 </style>

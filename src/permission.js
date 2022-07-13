@@ -12,7 +12,7 @@ router.beforeEach(async (to, from, next) => {
       if (userInfo && navList) {
         next()
       } else {
-        const userInfo = store.dispatch('user/getUserInfo')
+        const userInfo = await store.dispatch('user/getUserInfo')
         const navList = await store.dispatch('user/getNav')
         // console.log(userInfo)
         // console.log(navList)
@@ -21,7 +21,7 @@ router.beforeEach(async (to, from, next) => {
             'permission/filterRoutes',
             navList.authoritys
           )
-          console.log(routes)
+          // console.log(routes)
           if (routes) {
             routes.forEach((item) => {
               router.addRoute(item)

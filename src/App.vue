@@ -9,5 +9,6 @@
 html,
 body {
   height: 100%;
+  background: #e6ebee;
 }
 </style>

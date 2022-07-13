@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import home from './modules/home'
+import home from './modules/home'
 import user from './modules/user'
 import role from './modules/role'
 import menu from './modules/menu'
@@ -15,14 +15,12 @@ export const publicRoutes = [
   },
   {
     path: '/',
+    name: 'layout',
     component: layout,
+    redirect: '/sys/home',
     children: [
       {
-        path: '/',
-        component: () => import('../views/home')
-      },
-      {
-        path: '/404',
+        path: '404',
         name: '404',
         component: () => import('../views/404')
       }
@@ -30,7 +28,7 @@ export const publicRoutes = [
   }
 ]
 
-export const privateRoutes = [user, role, menu]
+export const privateRoutes = [user, role, menu, home]
 
 const router = new VueRouter({
   routes: publicRoutes

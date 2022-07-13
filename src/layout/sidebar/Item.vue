@@ -1,14 +1,14 @@
 <template>
   <div class="item">
     <template v-if="item && item.component !== null">
-      <el-menu-item :index="item.path">
+      <el-menu-item :index="item.path === '/' ? '/sys/home' : item.path">
         <i :class="'el-icon-' + item.icon"></i>
         <span slot="title">{{ item.label }}</span>
       </el-menu-item>
     </template>
 
-    <template v-if="item && item.component === null">
-      <el-submenu :index="item.perms">
+    <template v-if="item && item.component === null"
+      ><el-submenu :index="item.perms">
         <template slot="title">
           <i :class="'el-icon-' + item.icon"></i>
           <span>{{ item.label }}</span>
@@ -32,9 +32,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.el-menu-item {
-  &:hover {
-    background: red;
-  }
+.el-submenu__title:hover,
+.el-submenu__title:focus {
+  background: rgb(27, 36, 40) !important;
+}
+.el-menu-item:hover {
+  background: rgb(27, 36, 40) !important;
 }
 </style>

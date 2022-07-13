@@ -1,13 +1,16 @@
 <template>
   <div class="tags">
-    <div @click="$router.push('/')" :class="{ active: $route.path === '/' }">
+    <div
+      @click="$router.push('/sys/home')"
+      :class="{ active: $route.path === '/sys/home' }"
+    >
       控制台
     </div>
     <div
       class="last"
       v-for="(v, i) in getTagsList"
       :key="i"
-      @click="$router.push(v.path)"
+      @click="go(v.path)"
       :class="{ active: $route.path === v.path }"
     >
       {{ v.title }} <span @click.stop="delTag(i)">x</span>
@@ -31,7 +34,7 @@ export default {
   // 监控data中的数据变化
   watch: {
     $route(to, from) {
-      console.log(to)
+      // console.log(to)
       const obj = {
         path: to.path,
         title: to.meta.title
@@ -43,6 +46,9 @@ export default {
   methods: {
     delTag(i) {
       this.$store.commit('tagsView/DEL_TAG', i)
+    },
+    go(path) {
+      this.$router.push(path)
     }
   },
   // 生命周期 - 创建完成（可以访问当前this实例）

@@ -1,5 +1,5 @@
 import storage from '@/utils/storage'
-import router from '@/router'
+// import router from '@/router'
 export default {
   namespaced: true,
   state: {
@@ -13,7 +13,7 @@ export default {
           flag = true
         }
       })
-      if (obj.path === '/') {
+      if (obj.path === '/sys/home') {
         flag = true
       }
       if (!flag) {
@@ -23,7 +23,7 @@ export default {
     },
     DEL_TAG(state, i) {
       state.tagsViewList.splice(i, 1)
-      router.push(state.tagsViewList[i - 1].path)
+      // router.push(state.tagsViewList[i - 1].path)
       storage.setItem('tagsViewList', state.tagsViewList)
     },
     DEL_ALL_TAG(state) {

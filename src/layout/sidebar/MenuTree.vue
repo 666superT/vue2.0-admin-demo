@@ -28,15 +28,10 @@ export default {
   },
   data() {
     return {
-      isCollapse: true
+      isCollapse: false
     }
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.menu {
-  height: 100%;
-  background: rgb(34, 45, 50);
-}
-</style>
+<style lang="scss" scoped></style>
