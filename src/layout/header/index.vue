@@ -38,6 +38,19 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center
+    >
+      <span>您确定要退出系统吗？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleLogOut">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -49,7 +62,9 @@ export default {
   },
   // 定义属性
   data() {
-    return {}
+    return {
+      centerDialogVisible: false
+    }
   },
   // 计算属性，会监听依赖属性值随之变化
   computed: {
@@ -66,7 +81,7 @@ export default {
     },
     handleCommand(val) {
       if (val === 'set') this.handleSetUser()
-      if (val === 'out') this.handleLogOut()
+      if (val === 'out') this.centerDialogVisible = true
     },
     handleSetUser() {
       console.log('修改')

@@ -36,4 +36,11 @@ function getNavList() {
   return request({ url: '/menu/nav', method: 'get' })
 }
 
-export { getCaptcha, login, getUserInfo, getNavList }
+/**
+ * 渲染用户列表
+ */
+function getUserList(data) {
+  return request({ url: '/user/list', method: 'get', data })
+}
+
+export { getCaptcha, login, getUserInfo, getNavList, getUserList }

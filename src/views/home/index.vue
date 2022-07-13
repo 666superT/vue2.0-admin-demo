@@ -1,6 +1,6 @@
 <template>
-  <div class="">
-    <h1 v-for="v in 100" :key="v">{{ v }}</h1>
+  <div class="home">
+    <h1 v-for="v in 1000" :key="v">{{ v }}</h1>
   </div>
 </template>
 
