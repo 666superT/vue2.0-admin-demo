@@ -43,6 +43,16 @@
               </el-radio-group>
             </el-form-item>
           </template>
+
+          <el-form-item :key="v.prop" v-bind="v" v-if="v.type === 'text'">
+            <el-input
+              type="textarea"
+              :rows="2"
+              placeholder="请输入描述"
+              v-model="model[v.prop]"
+            >
+            </el-input>
+          </el-form-item>
         </template>
       </el-form>
 

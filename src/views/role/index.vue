@@ -13,6 +13,7 @@
           @handleSizeChange="handleSizeChange"
           @handleCurrentChange="handleCurrentChange"
           @handleDelEvent="handleDelEvent"
+          @handleTableEvent="handleTableEvent"
         >
           <template slot="search">
             <div class="box">
@@ -52,6 +53,27 @@
           @no="no"
           @handleSubmit="handleSubmit"
         />
+
+        <!-- 权限分配模态窗 -->
+        <el-dialog
+          :title="permissionTitle"
+          :visible.sync="dialogPermission"
+          center
+        >
+          <el-tree
+            :data="menus"
+            :props="defaultProps"
+            default-expand-all
+            :default-checked-keys="treeChecked"
+            node-key="id"
+            show-checkbox
+          >
+          </el-tree>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogPermission = false">取 消</el-button>
+            <el-button type="success" @click="dialogTree">确 定</el-button>
+          </div>
+        </el-dialog>
       </template>
     </my-body>
   </div>
@@ -63,7 +85,8 @@ import BreadCrumb from '../../components/BreadCrumb.vue'
 import BaseTable from '../../components/BaseTable.vue'
 import BaseDialog from '../../components/BaseDialog.vue'
 
-import { getRoleLise } from '../../api/role'
+import { getRoleLise, addRole, upRole, getRolePermission } from '../../api/role'
+import { getNavList } from '../../api/user'
 export default {
   components: {
     MyBody,
@@ -74,6 +97,13 @@ export default {
   // 定义属性
   data() {
     return {
+      treeChecked: [],
+      defaultProps: {
+        label: 'label',
+        children: 'children'
+      },
+      dialogPermission: false,
+      permissionTitle: '',
       total: 0,
       name: '',
       current: 1,
@@ -122,7 +152,7 @@ export default {
               type: 'warning',
               name: '分配权限',
               size: 'medium',
-              method: 'allot'
+              method: 'permission'
             },
             {
               type: 'danger',
@@ -135,9 +165,46 @@ export default {
         }
       ],
       dialog: false,
-      dialogClum: [],
-      addForm: {},
-      title: ''
+      dialogClum: [
+        {
+          prop: 'name',
+          label: '角色'
+        },
+        {
+          prop: 'code',
+          label: '编码'
+        },
+        {
+          type: 'text',
+          label: '描述',
+          prop: 'remark'
+        },
+        {
+          type: 'radio',
+          label: '状态',
+          prop: 'status',
+          data: [
+            {
+              label: '启用',
+              value: 1
+            },
+            {
+              label: '禁用',
+              value: 2
+            }
+          ]
+        }
+      ],
+      addForm: {
+        name: '',
+        code: '',
+        remark: '',
+        status: 1
+      },
+      title: '',
+      editId: '',
+      row: {},
+      menus: []
     }
   },
   // 计算属性，会监听依赖属性值随之变化
@@ -155,7 +222,7 @@ export default {
         size: this.size,
         name: this.name
       })
-      console.log(res)
+      // console.log(res)
       this.tableData = res.records
       this.total = res.total
     },
@@ -179,9 +246,79 @@ export default {
     },
     // 添加模态窗打开
     handleAddUser() {
+      this.editId = ''
+      this.addForm = {
+        name: '',
+        code: '',
+        remark: '',
+        status: 1
+      }
+      this.title = '新增角色'
       this.dialog = true
     },
-    handleSubmit(val) {}
+    // 提交
+    handleSubmit() {
+      if (!this.editId) this.addRoles()
+      if (this.editId) this.upDataOk()
+    },
+    // 新增角色确定
+    async addRoles() {
+      const res = await addRole(this.addForm)
+      // console.log(res)
+      if (res) {
+        this.render()
+        this.dialog = false
+      }
+      this.$message.success('添加成功')
+    },
+    // 表格事件
+    handleTableEvent(method, row) {
+      if (method === 'edit') this.updataRole(row)
+      if (method === 'permission') this.upPermission(row)
+    },
+    // 编辑模态窗打开
+    updataRole(row) {
+      // console.log(row)
+      this.editId = row.id
+      this.row = row
+      this.addForm = row
+      this.title = '编辑角色'
+      this.dialog = true
+    },
+    // 编辑确定
+    async upDataOk() {
+      const res = await upRole(this.row)
+      // console.log(res)
+      if (res) {
+        this.render()
+        this.dialog = false
+      }
+      this.$message.success('修改成功')
+    },
+    // 分配权限
+    async upPermission(row) {
+      this.treeChecked = []
+      // 请求权限列表
+      const { name, menuIds } = await getRolePermission(row.id)
+      const res = await getNavList()
+      // 拿到所有的菜单
+      this.permissionTitle = `给"${name}"分配权限`
+      // 给树状图赋值
+      this.menus = res.menus
+      // 给选中的复选框赋值
+      menuIds.forEach((v) => {
+        this.treeChecked.push(v)
+      })
+      // this.treeChecked = menuIds
+      console.log(menuIds)
+      console.log(res.menus)
+      this.dialogPermission = true
+    },
+    // 树状图确定
+    dialogTree() {
+      this.$message.success('分配权限成功')
+      this.dialogPermission = false
+    }
   },
   // 生命周期 - 创建完成（可以访问当前this实例）
   created() {
