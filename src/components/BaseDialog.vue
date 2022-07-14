@@ -4,6 +4,8 @@
       :title="title"
       :visible="dialogFormVisible"
       :before-close="handleClose"
+      width="30%"
+      center
     >
       <el-form :model="model" label-width="80px">
         <template v-for="v in dialogClum">
@@ -18,12 +20,28 @@
 
           <template v-if="v.type === 'password'">
             <el-form-item :key="v.prop" v-bind="v">
-              <el-input v-model="model[v.prop]"></el-input>
+              <el-input
+                v-model="model[v.prop]"
+                v-bind="v"
+                clearable
+                show-password
+              ></el-input>
             </el-form-item>
           </template>
 
           <template v-if="v.type === 'radio'">
-            <slot name="radio"></slot>
+            <el-form-item :label="v.label" :prop="v.prop" :key="v.prop">
+              <el-radio-group v-model="model[v.prop]">
+                <el-radio
+                  v-for="(j, k) in v.data"
+                  :key="k"
+                  :label="j.value"
+                  :name="j.label"
+                  >{{ j.label }}</el-radio
+                >
+                <!-- <el-radio :label="2" name="禁用">禁用</el-radio> -->
+              </el-radio-group>
+            </el-form-item>
           </template>
         </template>
       </el-form>

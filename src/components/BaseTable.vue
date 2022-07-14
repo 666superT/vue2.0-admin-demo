@@ -155,7 +155,9 @@ export default {
   // 方法集合
   methods: {
     // 表格事件
-    handleTagEvent(method, row) {},
+    handleTagEvent(method, row) {
+      this.$emit('handleTableEvent', method, row)
+    },
     // 表格删除事件
     handleDelEvent(row) {
       // console.log(row)

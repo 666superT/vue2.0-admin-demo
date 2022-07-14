@@ -13,6 +13,7 @@
           @handleSizeChange="handleSizeChange"
           @handleCurrentChange="handleCurrentChange"
           @handleDelEvent="handleDelEvent"
+          @handleTableEvent="handleTableEvent"
         >
           <template slot="search">
             <div class="box">
@@ -20,6 +21,7 @@
                 <el-form-item label="用户名">
                   <el-input
                     clearable
+                    @clear="handleClearInp"
                     v-model="username"
                     placeholder="请输入用户名"
                   ></el-input>
@@ -51,15 +53,33 @@
           @no="no"
           @handleSubmit="handleSubmit"
         >
-          <!-- <template slot="radio">
-            <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="addForm.status">
-                <el-radio :label="1" name="启用">启用</el-radio>
-                <el-radio :label="2" name="禁用">禁用</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </template> -->
         </base-dialog>
+
+        <!-- 分配角色模态窗 -->
+        <el-dialog
+          center
+          width="30%"
+          title="分配角色"
+          :visible.sync="dialogRoleVisible"
+        >
+          <el-form>
+            <el-form-item label="角色">
+              <el-select v-model="roleList" multiple placeholder="请选择角色">
+                <el-option
+                  v-for="(item, index) in options"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogRoleVisible = false">取 消</el-button>
+            <el-button type="success" @click="submitRoles">确 定</el-button>
+          </div>
+        </el-dialog>
       </template>
     </my-body>
   </div>
@@ -70,7 +90,14 @@ import MyBody from '../../components/MyBody.vue'
 import BreadCrumb from '../../components/BreadCrumb.vue'
 import BaseTable from '../../components/BaseTable.vue'
 import BaseDialog from '../../components/BaseDialog.vue'
-import { getUserList, addUser } from '../../api/user'
+import {
+  getUserList,
+  addUser,
+  updataUser,
+  getOneUser,
+  getRoleList,
+  handleRole
+} from '../../api/user'
 export default {
   components: {
     MyBody,
@@ -81,6 +108,7 @@ export default {
   // 定义属性
   data() {
     return {
+      userInfo: '',
       title: '',
       current: 1,
       size: 5,
@@ -124,6 +152,9 @@ export default {
           label: '操作',
           align: 'center',
           width: '300px',
+          callback(row) {
+            return row.roles.length === 1 && row.roles[0].code === 'admin'
+          },
           btns: [
             {
               type: 'success',
@@ -135,7 +166,7 @@ export default {
               type: 'warning',
               name: '分配角色',
               size: 'medium',
-              method: 'allot'
+              method: 'role'
             },
             {
               type: 'danger',
@@ -178,11 +209,11 @@ export default {
           data: [
             {
               label: '启用',
-              value: '1'
+              value: 1
             },
             {
               label: '禁用',
-              value: '2'
+              value: 2
             }
           ]
         }
@@ -194,7 +225,11 @@ export default {
         password: '',
         status: 1,
         username: ''
-      }
+      },
+      editId: '',
+      dialogRoleVisible: false,
+      roleList: [],
+      options: []
     }
   },
   // 计算属性，会监听依赖属性值随之变化
@@ -203,6 +238,9 @@ export default {
   watch: {},
   // 方法集合
   methods: {
+    handleClearInp() {
+      this.render()
+    },
     /**
      * 渲染
      */
@@ -248,14 +286,80 @@ export default {
     },
     // 新增用户
     handleAddUser() {
+      this.editId = ''
+      this.title = '新增用户'
+      this.addForm = {
+        avatar:
+          'https://img1.baidu.com/it/u=422323813,1539412709&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1657904400&t=239445a7dcfe064c765d9825831e1940',
+        email: '',
+        password: '',
+        status: 1,
+        username: ''
+      }
       this.dialog = true
     },
     no() {
       this.dialog = false
     },
-    async handleSubmit() {
+    handleSubmit() {
+      if (!this.editId) this.addUser()
+      if (this.editId) this.updateUser()
+    },
+    // 实现添加用户提交
+    async addUser() {
+      this.dialog = false
       const res = await addUser(this.addForm)
+      // console.log(res)
+      if (res) {
+        this.$message.success('添加成功')
+        this.render()
+      }
+    },
+    // 打开修改模态窗
+    async handleUpdateUser(row) {
+      this.title = '修改用户'
+      const res = await getOneUser(row.id)
+      this.addForm = res
+      this.userInfo = res
+      this.editId = row.id
+      this.dialog = true
+      // console.log(res)
+    },
+    // 实现修改用户提交
+    async updateUser() {
+      const res = await updataUser(this.userInfo)
+      // console.log(res)
+      if (res) {
+        this.$message.success('修改成功')
+        this.render()
+      }
+      this.dialog = false
+    },
+    // 表格事件
+    handleTableEvent(method, row) {
+      if (method === 'edit') this.handleUpdateUser(row)
+      if (method === 'role') this.handleRoleSubmit(row)
+    },
+    // 分配角色模态窗
+    async handleRoleSubmit(row) {
+      this.roleList = []
+      row.roles.forEach((v) => {
+        this.roleList.push(v.id)
+      })
+      this.editId = row.id
+      const res = await getRoleList()
+      // console.log(res)
+      this.options = res.records
+      this.dialogRoleVisible = true
+    },
+    async submitRoles() {
+      const res = await handleRole(this.editId, this.roleList)
       console.log(res)
+      if (res) {
+        this.$message.success('添加成功')
+        this.render()
+      }
+      this.dialogRoleVisible = false
     }
   },
   // 生命周期 - 创建完成（可以访问当前this实例）

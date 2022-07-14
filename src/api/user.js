@@ -56,6 +56,33 @@ function delUser(data) {
 function addUser(data) {
   return request({ url: '/user/add', method: 'post', data })
 }
+
+/**
+ * 编辑用户
+ */
+function updataUser(data) {
+  return request({ url: 'user/update', method: 'put', data })
+}
+/**
+ * 请求单个用户
+ */
+function getOneUser(id) {
+  return request({ url: `/user/userInfo/${id}`, method: 'get' })
+}
+
+/**
+ * 请求角色列表
+ */
+function getRoleList() {
+  return request({ url: '/role/list?current=1&size=50', method: 'get' })
+}
+
+/**
+ * 更改提交角色
+ */
+function handleRole(userId, data) {
+  return request({ url: `/user/assign/${userId}`, method: 'post', data })
+}
 export {
   getCaptcha,
   login,
@@ -63,5 +90,9 @@ export {
   getNavList,
   getUserList,
   delUser,
-  addUser
+  addUser,
+  updataUser,
+  getOneUser,
+  getRoleList,
+  handleRole
 }

@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import { Message } from 'element-ui'
+import router from '@/router'
 const http = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 5000
@@ -24,6 +25,9 @@ http.interceptors.response.use(
     }
     if (res.data.code === 400) {
       Message.error(res.data.msg)
+      store.commit('user/SET_TOKEN', '')
+      store.commit('tagsView/DEL_ALL_TAG')
+      router.push('/login')
     }
     // return res
   },

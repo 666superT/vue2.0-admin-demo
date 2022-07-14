@@ -23,6 +23,7 @@
                     v-model="name"
                     clearable
                     placeholder="请输入菜单"
+                    @clear="handleClearInp"
                   ></el-input>
                 </el-form-item>
                 <el-form-item>
@@ -146,6 +147,9 @@ export default {
   watch: {},
   // 方法集合
   methods: {
+    handleClearInp() {
+      this.render()
+    },
     async render() {
       const res = await getMenuList({
         current: this.current,

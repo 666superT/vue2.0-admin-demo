@@ -22,6 +22,7 @@
                     v-model="name"
                     placeholder="请输入角色"
                     clearable
+                    @clear="handleClearInp"
                   ></el-input>
                 </el-form-item>
                 <el-form-item>
@@ -42,6 +43,15 @@
             </div>
           </template>
         </base-table>
+
+        <base-dialog
+          :dialogFormVisible="dialog"
+          :dialogClum="dialogClum"
+          :model="addForm"
+          :title="title"
+          @no="no"
+          @handleSubmit="handleSubmit"
+        />
       </template>
     </my-body>
   </div>
@@ -51,13 +61,15 @@
 import MyBody from '../../components/MyBody.vue'
 import BreadCrumb from '../../components/BreadCrumb.vue'
 import BaseTable from '../../components/BaseTable.vue'
+import BaseDialog from '../../components/BaseDialog.vue'
 
 import { getRoleLise } from '../../api/role'
 export default {
   components: {
     MyBody,
     BreadCrumb,
-    BaseTable
+    BaseTable,
+    BaseDialog
   },
   // 定义属性
   data() {
@@ -108,7 +120,7 @@ export default {
             },
             {
               type: 'warning',
-              name: '分配角色',
+              name: '分配权限',
               size: 'medium',
               method: 'allot'
             },
@@ -121,7 +133,11 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      dialog: false,
+      dialogClum: [],
+      addForm: {},
+      title: ''
     }
   },
   // 计算属性，会监听依赖属性值随之变化
@@ -130,6 +146,9 @@ export default {
   watch: {},
   // 方法集合
   methods: {
+    handleClearInp() {
+      this.render()
+    },
     async render() {
       const res = await getRoleLise({
         current: this.current,
@@ -155,9 +174,14 @@ export default {
       this.current = 1
       this.render()
     },
+    no() {
+      this.dialog = false
+    },
+    // 添加模态窗打开
     handleAddUser() {
-      alert('新增')
-    }
+      this.dialog = true
+    },
+    handleSubmit(val) {}
   },
   // 生命周期 - 创建完成（可以访问当前this实例）
   created() {
