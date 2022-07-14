@@ -3,6 +3,7 @@
     <my-body>
       <template slot="body">
         <bread-crumb></bread-crumb>
+
         <base-table
           :tableData="tableData"
           :tableClum="tableClum"
@@ -11,12 +12,14 @@
           :size="size"
           @handleSizeChange="handleSizeChange"
           @handleCurrentChange="handleCurrentChange"
+          @handleDelEvent="handleDelEvent"
         >
           <template slot="search">
             <div class="box">
               <el-form :inline="true" class="demo-form-inline">
                 <el-form-item label="用户名">
                   <el-input
+                    clearable
                     v-model="username"
                     placeholder="请输入用户名"
                   ></el-input>
@@ -30,10 +33,33 @@
                   >
                 </el-form-item>
               </el-form>
-              <el-button type="primary" icon="el-icon-edit">新增</el-button>
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                @click="handleAddUser"
+                >新增</el-button
+              >
             </div>
           </template>
         </base-table>
+
+        <base-dialog
+          :dialogFormVisible="dialog"
+          :dialogClum="dialogClum"
+          :model="addForm"
+          :title="title"
+          @no="no"
+          @handleSubmit="handleSubmit"
+        >
+          <!-- <template slot="radio">
+            <el-form-item label="状态" prop="status">
+              <el-radio-group v-model="addForm.status">
+                <el-radio :label="1" name="启用">启用</el-radio>
+                <el-radio :label="2" name="禁用">禁用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </template> -->
+        </base-dialog>
       </template>
     </my-body>
   </div>
@@ -43,16 +69,19 @@
 import MyBody from '../../components/MyBody.vue'
 import BreadCrumb from '../../components/BreadCrumb.vue'
 import BaseTable from '../../components/BaseTable.vue'
-import { getUserList } from '../../api/user'
+import BaseDialog from '../../components/BaseDialog.vue'
+import { getUserList, addUser } from '../../api/user'
 export default {
   components: {
     MyBody,
     BreadCrumb,
-    BaseTable
+    BaseTable,
+    BaseDialog
   },
   // 定义属性
   data() {
     return {
+      title: '',
       current: 1,
       size: 5,
       username: '',
@@ -85,7 +114,7 @@ export default {
           align: 'center'
         },
         {
-          type: 'swatch',
+          type: 'switch',
           prop: 'status',
           label: '状态',
           align: 'center'
@@ -112,13 +141,60 @@ export default {
               type: 'danger',
               name: '删除',
               size: 'medium',
-              method: 'del'
+              method: 'del',
+              slot: 'reference'
             }
           ]
         }
       ],
       tableData: [],
-      total: 0
+      total: 0,
+      dialog: false,
+      dialogClum: [
+        {
+          prop: 'avatar',
+          type: 'img',
+          label: '头像',
+          avatar:
+            'https://img2.baidu.com/it/u=2744676768,2143551610&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1657818000&t=daf1f987bcc16e2c8ea80bb7c657b9b6'
+        },
+        {
+          prop: 'username',
+          label: '用户名'
+        },
+        {
+          type: 'password',
+          prop: 'password',
+          label: '密码'
+        },
+        {
+          prop: 'email',
+          label: '邮箱'
+        },
+        {
+          type: 'radio',
+          label: '状态',
+          prop: 'status',
+          data: [
+            {
+              label: '启用',
+              value: '1'
+            },
+            {
+              label: '禁用',
+              value: '2'
+            }
+          ]
+        }
+      ],
+      addForm: {
+        avatar:
+          'https://img1.baidu.com/it/u=422323813,1539412709&fm=253&app=138&size=w931&n=0&f=JPEG&fmt=auto?sec=1657904400&t=239445a7dcfe064c765d9825831e1940',
+        email: '',
+        password: '',
+        status: 1,
+        username: ''
+      }
     }
   },
   // 计算属性，会监听依赖属性值随之变化
@@ -136,7 +212,7 @@ export default {
         size: this.size,
         username: this.username
       })
-      console.log(res)
+      // console.log(res)
       this.tableData = res.records
       this.total = res.total
     },
@@ -160,6 +236,26 @@ export default {
     handleQueryUser() {
       this.current = 1
       this.render()
+    },
+    /**
+     * 删除用户
+     */
+    async handleDelEvent(val) {
+      alert('接口不通')
+      // const res = await delUser(val.id)
+      // console.log(res)
+      // console.log(val)
+    },
+    // 新增用户
+    handleAddUser() {
+      this.dialog = true
+    },
+    no() {
+      this.dialog = false
+    },
+    async handleSubmit() {
+      const res = await addUser(this.addForm)
+      console.log(res)
     }
   },
   // 生命周期 - 创建完成（可以访问当前this实例）

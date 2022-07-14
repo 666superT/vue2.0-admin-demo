@@ -2,7 +2,7 @@
   <div class="base_table">
     <slot name="search"></slot>
 
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="tableData" border style="width: 100%" row-key="id">
       <template v-if="index">
         <el-table-column type="index" label="序号" />
       </template>
@@ -30,7 +30,30 @@
           </el-table-column>
         </template>
 
-        <template v-if="v.type === 'swatch'">
+        <template v-if="v.type === 'tags'">
+          <el-table-column v-bind="v" :key="v.prop">
+            <template slot-scope="scope">
+              <el-tag
+                :type="
+                  scope.row.type === 0
+                    ? 'success'
+                    : scope.row.type === 1
+                    ? 'primary'
+                    : 'danger'
+                "
+                >{{
+                  scope.row.type === 0
+                    ? '目录'
+                    : scope.row.type === 1
+                    ? '菜单'
+                    : '按钮'
+                }}</el-tag
+              >
+            </template>
+          </el-table-column>
+        </template>
+
+        <template v-if="v.type === 'switch'">
           <el-table-column v-bind="v" :key="v.prop">
             <template slot-scope="scope">
               <el-switch
@@ -46,13 +69,30 @@
         <template v-if="v.type === 'btn'">
           <el-table-column v-bind="v" :key="v.prop">
             <template slot-scope="scope">
-              <el-tag
-                v-for="(j, k) in v.btns"
-                v-bind="j"
-                @click="handleTagEvent(j.method, scope.row)"
-                :key="k"
-                >{{ j.name }}</el-tag
+              <template v-for="(j, k) in v.btns">
+                <el-button
+                  v-if="j.type !== 'danger'"
+                  v-bind="j"
+                  @click="handleTagEvent(j.method, scope.row)"
+                  :key="k"
+                  plain
+                  >{{ j.name }}</el-button
+                >
+              </template>
+
+              <el-popconfirm
+                title="这是一段内容确定删除吗？"
+                @confirm="handleDelEvent(scope.row)"
               >
+                <el-button
+                  v-for="(j, k) in v.btns"
+                  v-bind="j"
+                  @click="handleTagEvent(j.method, scope.row)"
+                  :key="k"
+                  plain
+                  >{{ j.name }}</el-button
+                >
+              </el-popconfirm>
             </template>
           </el-table-column>
         </template>
@@ -114,7 +154,14 @@ export default {
   watch: {},
   // 方法集合
   methods: {
+    // 表格事件
     handleTagEvent(method, row) {},
+    // 表格删除事件
+    handleDelEvent(row) {
+      // console.log(row)
+      this.$emit('handleDelEvent', row)
+    },
+
     handleSizeChange(val) {
       this.$emit('handleSizeChange', val)
     },
@@ -147,16 +194,15 @@ export default {
 .base_table {
   padding: 20px;
 }
-.el-tag {
-  cursor: pointer;
-  margin-left: 10px;
-}
 .page {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
 }
-.el-table{
+.el-table {
   margin-top: 20px;
+}
+.el-button--warning {
+  margin-right: 10px;
 }
 </style>

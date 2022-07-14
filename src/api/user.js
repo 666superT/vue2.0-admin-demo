@@ -43,4 +43,25 @@ function getUserList(data) {
   return request({ url: '/user/list', method: 'get', data })
 }
 
-export { getCaptcha, login, getUserInfo, getNavList, getUserList }
+/**
+ * 删除用户
+ */
+function delUser(data) {
+  return request({ url: `/user/del?integers:${data}`, method: 'post' })
+}
+
+/**
+ * 新增用户
+ */
+function addUser(data) {
+  return request({ url: '/user/add', method: 'post', data })
+}
+export {
+  getCaptcha,
+  login,
+  getUserInfo,
+  getNavList,
+  getUserList,
+  delUser,
+  addUser
+}
